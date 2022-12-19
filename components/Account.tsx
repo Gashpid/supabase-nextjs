@@ -1,6 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
 import { Database } from '../utils/database.types'
+import Avatar from './Avatar'
+
+/*
+interface format_table {
+  profiles:{
+    Row: {
+      id: string
+      updated_at: string | null
+      username: string | null
+      full_name: string | null
+      avatar_url: string | null
+      website: string | null
+    }
+  }
+} 
+*/
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export default function Account({ session }: { session: Session }) {
@@ -77,6 +94,15 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <div className="form-widget">
+      <Avatar
+        uid={session.user.id}
+        url={avatar_url}
+        size={150}
+        onUpload={(url) => {
+        setAvatarUrl(url)
+        updateProfile({ username, website, avatar_url: url })
+      }} ></Avatar>
+
       <div>
         <label htmlFor="email">Email</label>
         <input id="email" type="text" value={session.user.email} disabled />
