@@ -35,6 +35,29 @@ export interface Database {
           website?: string | null
         }
       }
+      products: {
+        Row: {
+          id: string
+          updated_at: string | null
+          productname: string | null
+          product_cost: string | null
+          product_url: string | null
+        }
+        Insert: {
+          id: string
+          updated_at: string | null
+          productname: string | null
+          product_cost: string | null
+          product_url: string | null
+        }
+        Update: {
+          id?: string
+          updated_at?: string | null
+          productname?: string | null
+          product_cost?: string | null
+          product_url?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

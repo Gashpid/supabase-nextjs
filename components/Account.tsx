@@ -1,32 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
 import { Database } from '../utils/database.types'
+
 import Avatar from './Avatar'
 
-/*
-interface format_table {
-  profiles:{
-    Row: {
-      id: string
-      updated_at: string | null
-      username: string | null
-      full_name: string | null
-      avatar_url: string | null
-      website: string | null
-    }
-  }
-} 
-*/
+export default function Account({ session, Table }: { session: Session, Table:String}) {
 
-type Profiles = Database['public']['Tables']['profiles']['Row']
+  type DataStructure = Database['public']['Tables'][Table]['Row']
 
-export default function Account({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const user = useUser()
   const [loading, setLoading] = useState(true)
-  const [username, setUsername] = useState<Profiles['username']>(null)
-  const [website, setWebsite] = useState<Profiles['website']>(null)
-  const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
+  const [username, setUsername] = useState<DataStructure['username']>(null)
+  const [website, setWebsite] = useState<DataStructure['website']>(null)
+  const [avatar_url, setAvatarUrl] = useState<DataStructure['avatar_url']>(null)
 
   useEffect(() => {
     getProfile()
@@ -65,9 +52,9 @@ export default function Account({ session }: { session: Session }) {
     website,
     avatar_url,
   }: {
-    username: Profiles['username']
-    website: Profiles['website']
-    avatar_url: Profiles['avatar_url']
+    username: DataStructure['username']
+    website: DataStructure['website']
+    avatar_url: DataStructure['avatar_url']
   }) {
     try {
       setLoading(true)
