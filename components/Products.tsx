@@ -3,18 +3,18 @@ import { Database } from '../utils/database.types'
 import { useState, useEffect } from 'react'
 import Avatar from './Avatar'
 
-export default function Account({ session }: { session: Session }) {
+export default function Products({ session }: { session: Session }) {
 
-  type DataStructure = Database['public']['Tables']['profiles']['Row']
+  type DataStructure = Database['public']['Tables']['products']['Row']
 
   const supabase = useSupabaseClient<Database>()
   const user = useUser()
   const [loading, setLoading] = useState(true)
   
 
-  const [username, setUsername] = useState<DataStructure['username']>(null)
-  const [website, setWebsite] = useState<DataStructure['website']>(null)
-  const [avatar_url, setAvatarUrl] = useState<DataStructure['avatar_url']>(null)
+  const [productname, setProductname] = useState<DataStructure['productname']>(null)
+  const [product_cost, setCost] = useState<DataStructure['product_cost']>(null)
+  const [product_url, setProductUrl] = useState<DataStructure['product_url']>(null)
 
   useEffect(() => {
     getProfile()
@@ -26,8 +26,8 @@ export default function Account({ session }: { session: Session }) {
       if (!user) throw new Error('No user')
 
       let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, website, avatar_url`)
+        .from('products')
+        .select(`productname, product_cost, product_url`)
         .eq('id', user.id)
         .single()
 
@@ -36,9 +36,9 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
-        setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
+        setProductname(data.productname)
+        setCost(data.product_cost)
+        setProductUrl(data.product_url)
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -49,13 +49,13 @@ export default function Account({ session }: { session: Session }) {
   }
 
   async function updateProfile({
-    username,
-    website,
-    avatar_url,
+    productname,
+    product_cost,
+    product_url,
   }: {
-    username: DataStructure['username']
-    website: DataStructure['website']
-    avatar_url: DataStructure['avatar_url']
+    productname: DataStructure['productname']
+    product_cost: DataStructure['product_cost']
+    product_url: DataStructure['product_url']
   }) {
     try {
       setLoading(true)
@@ -63,9 +63,9 @@ export default function Account({ session }: { session: Session }) {
 
       const updates = {
         id: user.id,
-        username,
-        website,
-        avatar_url,
+        productname,
+        product_cost,
+        product_url,
         updated_at: new Date().toISOString(),
       }
 
@@ -84,40 +84,35 @@ export default function Account({ session }: { session: Session }) {
     <div className="form-widget">
       <Avatar
         uid={session.user.id}
-        url={avatar_url}
+        url={product_url}
         size={150}
         onUpload={(url) => {
-        setAvatarUrl(url)
-        updateProfile({ username, website, avatar_url: url })
+        setProductUrl(url)
+        updateProfile({ productname, product_cost, product_url: url })
       }} ></Avatar>
 
       <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
-          id="username"
+        <label htmlFor="ProductName">Product name</label>
+        <input 
+          id="ProductName"
           type="text"
-          value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
+          value={productname || ''}
+          onChange={(e) => setProductname(e.target.value)}
         />
       </div>
       <div>
-        <label htmlFor="website">Website</label>
+        <label htmlFor="ProductCost">Cost</label>
         <input
-          id="website"
-          type="website"
-          value={website || ''}
-          onChange={(e) => setWebsite(e.target.value)}
+          id="ProductCost"
+          type="text"
+          value={productname || ''}
+          onChange={(e) => setCost(e.target.value)}
         />
       </div>
-
       <div>
         <button
           className="button primary block"
-          onClick={() => updateProfile({ username, website, avatar_url })}
+          onClick={() => updateProfile({ productname, product_cost, product_url })}
           disabled={loading}
         >
           {loading ? 'Loading ...' : 'Update'}
