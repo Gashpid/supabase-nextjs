@@ -1,16 +1,17 @@
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
+import UploadImage from '../supabase/UploadImageProducts'
 import { Database } from '../utils/database.types'
 import { useState, useEffect } from 'react'
-import Avatar from './Avatar'
+
+type DataStructure = Database['public']['Tables']['products']['Row']
 
 export default function Products({ session }: { session: Session }) {
-
-  type DataStructure = Database['public']['Tables']['products']['Row']
 
   const supabase = useSupabaseClient<Database>()
   const user = useUser()
   const [loading, setLoading] = useState(true)
-  
+
+  type UrlImage = DataStructure['product_url']  
 
   const [productname, setProductname] = useState<DataStructure['productname']>(null)
   const [product_cost, setCost] = useState<DataStructure['product_cost']>(null)
@@ -82,14 +83,15 @@ export default function Products({ session }: { session: Session }) {
 
   return (
     <div className="form-widget">
-      <Avatar
-        uid={session.user.id}
-        url={product_url}
+      <UploadImage
+        uid={'cambiar nombre'}
+        url={'product_url'}
+        bucket={'products'}
         size={150}
         onUpload={(url) => {
         setProductUrl(url)
         updateProfile({ productname, product_cost, product_url: url })
-      }} ></Avatar>
+      }} ></UploadImage>
 
       <div>
         <label htmlFor="ProductName">Product name</label>
@@ -105,7 +107,7 @@ export default function Products({ session }: { session: Session }) {
         <input
           id="ProductCost"
           type="text"
-          value={productname || ''}
+          value={product_cost || ''}
           onChange={(e) => setCost(e.target.value)}
         />
       </div>

@@ -1,11 +1,11 @@
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
+import UploadImage from '../supabase/UploadImageProfiles'
 import { Database } from '../utils/database.types'
 import { useState, useEffect } from 'react'
-import Avatar from './Avatar'
+
+type DataStructure = Database['public']['Tables']['profiles']['Row']
 
 export default function Account({ session }: { session: Session }) {
-
-  type DataStructure = Database['public']['Tables']['profiles']['Row']
 
   const supabase = useSupabaseClient<Database>()
   const user = useUser()
@@ -82,14 +82,15 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <div className="form-widget">
-      <Avatar
+      <UploadImage
         uid={session.user.id}
         url={avatar_url}
+        bucket={'avatars'}
         size={150}
         onUpload={(url) => {
         setAvatarUrl(url)
         updateProfile({ username, website, avatar_url: url })
-      }} ></Avatar>
+      }} ></UploadImage>
 
       <div>
         <label htmlFor="email">Email</label>

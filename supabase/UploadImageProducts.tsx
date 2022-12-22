@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Database } from '../utils/database.types'
-type Profiles = Database['public']['Tables']['profiles']['Row']
+import React, { useEffect, useState } from 'react'
 
-export default function Avatar({uid, url, size, onUpload,}: {uid: string, url: Profiles['avatar_url'], size: number,  onUpload: (url: string) => void }) {
+
+type Table = 'products' // Set Table
+type Camp = 'product_url' // Set Camp to save image URL
+
+
+type DataStructure = Database['public']['Tables'][Table]['Row']
+
+export default function Avatar({uid, url, bucket, size, onUpload,}: {uid: String, url:DataStructure[Camp], bucket:string,  size: number,  onUpload: (url: string) => void }) {
   
   const supabase = useSupabaseClient<Database>()
-  
-  const [avatarUrl, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
+  const [avatarUrl, setImageUrl] = useState<DataStructure[Camp]>(null)
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
@@ -16,12 +21,12 @@ export default function Avatar({uid, url, size, onUpload,}: {uid: string, url: P
 
   async function downloadImage(path: string) {
     try {
-      const { data, error } = await supabase.storage.from('avatars').download(path)
+      const { data, error } = await supabase.storage.from(bucket).download(path)
       if (error) {
         throw error
       }
       const url = URL.createObjectURL(data)
-      setAvatarUrl(url)
+      setImageUrl(url)
     } catch (error) {
       console.log('Error downloading image: ', error)
     }
@@ -41,7 +46,7 @@ export default function Avatar({uid, url, size, onUpload,}: {uid: string, url: P
       const filePath = `${fileName}`
 
       let { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from(bucket)
         .upload(filePath, file, { upsert: true })
 
       if (uploadError) {
@@ -62,12 +67,12 @@ export default function Avatar({uid, url, size, onUpload,}: {uid: string, url: P
       {avatarUrl ? (
         <img
           src={avatarUrl}
-          alt="Avatar"
+          alt="Image"
           className="avatar image"
           style={{ height: size, width: size }}
         />
       ) : (
-        <div className="avatar no-image" style={{ height: size, width: size }} />
+        <div className="Image no-image" style={{ height: size, width: size }} />
       )}
       <div style={{ width: size }}>
         <label className="button primary block" htmlFor="single">
